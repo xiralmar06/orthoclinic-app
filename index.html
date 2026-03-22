@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>OrthoClinic</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ── iOS SYSTEM ── */
+:root {
+  --bg:        #F2F2F7;
+  --surface:   #FFFFFF;
+  --surface2:  #F9F9FB;
+  --sep:       rgba(60,60,67,0.12);
+  --label:     #1C1C1E;
+  --label2:    #3A3A3C;
+  --label3:    #636366;
+  --label4:    #AEAEB2;
+  --blue:      #007AFF;
+  --blue-lt:   #EAF3FF;
+  --teal:      #00C7BE;
+  --teal-lt:   #E5FAF9;
+  --red:       #FF3B30;
+  --red-lt:    #FFF0EF;
+  --orange:    #FF9500;
+  --orange-lt: #FFF6E5;
+  --green:     #34C759;
+  --green-lt:  #EDFAF1;
+  --wa:        #25D366;
+  --r-card:    16px;
+  --r-btn:     14px;
+  --r-pill:    50px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.04);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.04);
+  --font-body: 'Plus Jakarta Sans', -apple-system, sans-serif;
+  --font-disp: 'Playfair Display', Georgia, serif;
+  --safe-top: env(safe-area-inset-top, 44px);
+  --safe-bot: env(safe-area-inset-bottom, 20px);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html { background:#000; }
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--label);
+  min-height: 100vh;
+  max-width: 430px;
+  margin: 0 auto;
+  position: relative;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── STATUS BAR ── */
+.status-bar {
+  height: calc(var(--safe-top) + 4px);
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+}
+
+/* ── NAVIGATION BAR ── */
+.nav-bar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(255,255,255,0.88);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 0.5px solid var(--sep);
+  padding: 0 16px;
+}
+.nav-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 52px;
+}
+.nav-logo {
+  font-family: var(--font-disp);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--label);
+  letter-spacing: -0.3px;
+}
+.nav-logo span { color: var(--blue); }
+.nav-avatar {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--blue), var(--teal));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.9rem;
+  box-shadow: var(--shadow-sm);
+}
+
+/* ── TAB BAR (bottom iOS style) ── */
+.tab-bar {
+  position: fixed;
+  bottom: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 100%; max-width: 430px;
+  background: rgba(249,249,251,0.92);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border-top: 0.5px solid var(--sep);
+  padding-bottom: calc(var(--safe-bot) + 2px);
+  z-index: 100;
+}
+.tab-items {
+  display: flex;
+  padding: 8px 0 4px;
+}
+.tab-item {
+  flex: 1;
+  display: flex; flex-direction: column;
+  align-items: center; gap: 3px;
+  padding: 4px 0;
+  border: none; background: none;
+  cursor: pointer;
+  transition: opacity .15s;
+  font-family: var(--font-body);
+}
+.tab-item:active { opacity: 0.6; }
+.tab-icon {
+  width: 28px; height: 28px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem;
+  transition: all .2s;
+}
+.tab-item.active .tab-icon { background: var(--blue-lt); transform: scale(1.08); }
+.tab-label {
+  font-size: 0.6rem;
+  font-weight: 600;
+  color: var(--label4);
+  letter-spacing: 0.2px;
+}
+.tab-item.active .tab-label { color: var(--blue); }
+
+/* ── SCROLL CONTENT ── */
+.content {
+  padding: 16px 16px 120px;
+}
+.panel { display: none; animation: fadeUp .28s ease; }
+.panel.active { display: block; }
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(12px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+/* ── SECTION TITLE ── */
+.section-title {
+  font-family: var(--font-disp);
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--label);
+  letter-spacing: -0.5px;
+  margin-bottom: 4px;
+}
+.section-sub {
+  font-size: 0.82rem;
+  color: var(--label3);
+  font-weight: 400;
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+/* ── CARDS ── */
+.ios-card {
+  background: var(--surface);
+  border-radius: var(--r-card);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+.ios-card-inner { padding: 16px; }
+
+/* ── HOME HERO ── */
+.hero {
+  background: linear-gradient(145deg, #1C1C1E 0%, #2C2C2E 100%);
+  border-radius: 20px;
+  padding: 22px 20px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow-lg);
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -40px; right: -40px;
+  width: 180px; height: 180px;
+  background: radial-gradient(circle, rgba(0,122,255,0.25), transparent 70%);
+  border-radius: 50%;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: -30px; left: -20px;
+  width: 140px; height: 140px;
+  background: radial-gradient(circle, rgba(0,199,190,0.2), transparent 70%);
+  border-radius: 50%;
+}
+.hero-eyebrow {
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: var(--teal);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  position: relative; z-index: 1;
+}
+.hero-name {
+  font-family: var(--font-disp);
+  font-size: 1.5rem;
+  color: #fff;
+  line-height: 1.2;
+  margin-bottom: 2px;
+  position: relative; z-index: 1;
+}
+.hero-sub {
+  font-size: 0.76rem;
+  color: rgba(255,255,255,0.45);
+  font-weight: 400;
+  margin-bottom: 18px;
+  position: relative; z-index: 1;
+}
+.progress-wrap { position: relative; z-index: 1; }
+.progress-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.68rem;
+  color: rgba(255,255,255,0.5);
+  font-weight: 600;
+  margin-bottom: 7px;
+}
+.progress-track {
+  height: 6px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 50px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  width: 65%;
+  background: linear-gradient(90deg, var(--teal), var(--blue));
+  border-radius: 50px;
+  animation: growBar .8s ease forwards;
+}
+@keyframes growBar { from { width: 0 } to { width: 65% } }
+.hero-appt {
+  margin-top: 14px;
+  background: rgba(255,255,255,0.07);
+  border: 0.5px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  padding: 11px 14px;
+  display: flex; align-items: center; gap: 11px;
+  position: relative; z-index: 1;
+}
+.appt-cal {
+  width: 42px; height: 42px;
+  background: var(--blue);
+  border-radius: 10px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.appt-cal .month { font-size: 0.52rem; font-weight: 800; color: rgba(255,255,255,0.7); text-transform: uppercase; letter-spacing: 1px; }
+.appt-cal .day   { font-family: var(--font-disp); font-size: 1.3rem; color: #fff; line-height: 1; }
+.appt-info .albl { font-size: 0.6rem; color: rgba(255,255,255,0.4); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+.appt-info .adate { font-size: 0.84rem; font-weight: 700; color: #fff; margin-top: 1px; }
+.appt-info .atype { font-size: 0.68rem; color: rgba(255,255,255,0.4); margin-top: 1px; }
+
+/* ── MODULE GRID ── */
+.module-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.module-btn {
+  background: var(--surface);
+  border: none;
+  border-radius: 16px;
+  padding: 18px 14px 16px;
+  cursor: pointer;
+  text-align: left;
+  box-shadow: var(--shadow-sm);
+  transition: all .18s;
+  position: relative;
+  overflow: hidden;
+  font-family: var(--font-body);
+}
+.module-btn:active { transform: scale(0.96); }
+.module-btn .m-icon {
+  font-size: 1.8rem;
+  margin-bottom: 10px;
+  display: block;
+}
+.module-btn .m-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--label);
+  line-height: 1.3;
+}
+.module-btn .m-sub {
+  font-size: 0.62rem;
+  color: var(--label4);
+  font-weight: 500;
+  margin-top: 3px;
+}
+.module-btn .m-dot {
+  position: absolute;
+  top: 12px; right: 12px;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--blue);
+}
+
+/* ── INSET GROUPED LIST (iOS style) ── */
+.list-group { margin-bottom: 12px; }
+.list-header {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--label3);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  padding: 0 4px 8px;
+}
+.list-item {
+  background: var(--surface);
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 13px 16px;
+  border-bottom: 0.5px solid var(--sep);
+  cursor: pointer;
+  transition: background .12s;
+  font-family: var(--font-body);
+  width: 100%;
+  border: none;
+  text-align: left;
+}
+.list-item:first-of-type { border-radius: 12px 12px 0 0; }
+.list-item:last-of-type  { border-radius: 0 0 12px 12px; border-bottom: none; }
+.list-item:only-of-type  { border-radius: 12px; border-bottom: none; }
+.list-item:active { background: var(--bg); }
+.li-icon {
+  width: 34px; height: 34px;
+  border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+.li-body { flex: 1; }
+.li-title { font-size: 0.86rem; font-weight: 600; color: var(--label); }
+.li-sub   { font-size: 0.72rem; color: var(--label3); margin-top: 1px; line-height: 1.4; }
+.li-right { display: flex; align-items: center; gap: 6px; }
+.li-badge {
+  font-size: 0.58rem;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 50px;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+.badge-red    { background: var(--red-lt);    color: var(--red); }
+.badge-orange { background: var(--orange-lt); color: var(--orange); }
+.badge-green  { background: var(--green-lt);  color: #1B7A3E; }
+.li-chevron {
+  font-size: 0.7rem;
+  color: var(--label4);
+}
+
+/* ── DETAIL VIEW ── */
+.detail-view { display: none; animation: fadeUp .28s ease; }
+.detail-view.active { display: block; }
+.back-btn {
+  display: flex; align-items: center; gap: 5px;
+  background: none; border: none;
+  color: var(--blue);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 0;
+  margin-bottom: 18px;
+  transition: opacity .15s;
+}
+.back-btn:active { opacity: 0.5; }
+.detail-hero {
+  display: flex; align-items: flex-start; gap: 14px;
+  margin-bottom: 16px;
+}
+.detail-icon-wrap {
+  width: 60px; height: 60px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #1C1C1E, #3A3A3C);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.8rem;
+  flex-shrink: 0;
+  box-shadow: var(--shadow-md);
+}
+.detail-title {
+  font-family: var(--font-disp);
+  font-size: 1.3rem;
+  color: var(--label);
+  line-height: 1.25;
+  padding-top: 4px;
+}
+.detail-desc {
+  font-size: 0.82rem;
+  color: var(--label3);
+  line-height: 1.65;
+  margin-bottom: 14px;
+}
+.info-box {
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 10px;
+}
+.info-box.green { background: var(--green-lt); }
+.info-box.red   { background: var(--red-lt); }
+.info-box-head {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 10px;
+}
+.info-box-title {
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: -0.2px;
+}
+.info-box.green .info-box-title { color: #1B7A3E; }
+.info-box.red   .info-box-title { color: var(--red); }
+.info-box-text {
+  font-size: 0.8rem;
+  line-height: 1.65;
+  color: var(--label2);
+}
+
+/* ── STAGES TIMELINE ── */
+.timeline { padding: 4px 0; }
+.tl-row {
+  display: flex; gap: 12px;
+  padding-bottom: 18px;
+  position: relative;
+}
+.tl-row:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: 17px; top: 38px;
+  width: 2px; height: calc(100% - 20px);
+  background: var(--sep);
+}
+.tl-row.done::after  { background: var(--teal); }
+.tl-row.cur::after   { background: linear-gradient(var(--teal), var(--sep)); }
+.tl-dot {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+  border: 2.5px solid var(--sep);
+  background: var(--surface);
+  z-index: 1;
+}
+.tl-row.done .tl-dot { background: var(--teal);  border-color: var(--teal);  color: white; }
+.tl-row.cur  .tl-dot { background: var(--blue);  border-color: var(--blue);  box-shadow: 0 0 0 5px rgba(0,122,255,0.12); }
+.tl-row.pend .tl-dot { background: var(--bg); }
+.tl-title { font-size: 0.84rem; font-weight: 700; color: var(--label); margin-bottom: 2px; }
+.tl-desc  { font-size: 0.72rem; color: var(--label3); line-height: 1.55; }
+.tl-tag {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 0.6rem; font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 50px; margin-top: 5px;
+}
+.tl-tag.done { background: var(--teal-lt); color: #007370; }
+.tl-tag.cur  { background: var(--blue-lt); color: var(--blue); }
+.tl-tag.pend { background: var(--bg); color: var(--label4); border: 1px solid var(--sep); }
+
+/* ── PHOTO STRIP ── */
+.photo-strip {
+  display: flex; gap: 10px;
+  overflow-x: auto; scrollbar-width: none;
+  padding: 4px 2px 8px;
+}
+.photo-strip::-webkit-scrollbar { display: none; }
+.photo-cell { flex: none; text-align: center; }
+.photo-frame {
+  width: 76px; height: 76px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem;
+  margin-bottom: 5px;
+  border: 1.5px solid var(--sep);
+  background: var(--bg);
+  transition: transform .15s;
+  overflow: hidden;
+}
+.photo-frame.filled {
+  background: linear-gradient(135deg, #1C1C1E, #3A3A3C);
+  border-color: transparent;
+  font-size: 2rem;
+}
+.photo-frame:active { transform: scale(0.94); }
+.photo-lbl  { font-size: 0.62rem; font-weight: 600; color: var(--label3); }
+.photo-date { font-size: 0.58rem; color: var(--label4); }
+
+/* ── VIDEO CARDS ── */
+.video-card {
+  background: var(--surface);
+  border-radius: var(--r-card);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+/* Contenedor responsive 16:9 para iframes de YouTube */
+.video-embed-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 12px 12px 0 0;
+  overflow: hidden;
+  background: #000;
+}
+.video-embed-wrap iframe {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+}
+.video-thumb {
+  width: 100%;
+  aspect-ratio: 16/9;
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+  cursor: pointer;
+  overflow: hidden;
+}
+.vt-dark { background: linear-gradient(145deg, #0A1628, #1A3A5C); }
+.vt-teal { background: linear-gradient(145deg, #004D45, #007370); }
+.vbg     { position: absolute; font-size: 7rem; opacity: 0.06; right: -10px; bottom: -15px; }
+.play-circle {
+  width: 58px; height: 58px;
+  background: rgba(255,255,255,0.12);
+  border: 2px solid rgba(255,255,255,0.3);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem;
+  backdrop-filter: blur(8px);
+  transition: all .2s;
+  position: relative; z-index: 1;
+}
+.video-thumb:active .play-circle {
+  background: var(--blue);
+  border-color: var(--blue);
+  transform: scale(0.93);
+}
+.vt-text { text-align: center; position: relative; z-index: 1; margin-top: 10px; }
+.vt-title { font-size: 0.78rem; font-weight: 700; color: rgba(255,255,255,0.9); }
+.vt-dur   { font-size: 0.64rem; color: rgba(255,255,255,0.45); margin-top: 2px; }
+.video-meta { padding: 13px 15px; }
+.vm-title { font-size: 0.9rem; font-weight: 700; color: var(--label); margin-bottom: 3px; }
+.vm-desc  { font-size: 0.76rem; color: var(--label3); line-height: 1.55; }
+.vm-tag {
+  display: inline-block;
+  background: var(--teal-lt); color: #007370;
+  font-size: 0.6rem; font-weight: 800;
+  padding: 3px 10px; border-radius: 50px;
+  margin-top: 8px; text-transform: uppercase; letter-spacing: 0.5px;
+}
+
+/* ── GUIDE SEGMENTED CONTROL ── */
+.segmented {
+  display: flex;
+  background: rgba(118,118,128,0.12);
+  border-radius: 10px;
+  padding: 2px;
+  margin-bottom: 18px;
+}
+.seg-btn {
+  flex: 1;
+  padding: 8px;
+  border: none;
+  background: none;
+  border-radius: 8px;
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--label3);
+  cursor: pointer;
+  transition: all .2s;
+}
+.seg-btn.active {
+  background: var(--surface);
+  color: var(--label);
+  box-shadow: var(--shadow-sm);
+}
+.guide-sec { display: none; }
+.guide-sec.active { display: block; }
+
+/* FOOD GRID */
+.food-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+.food-col {
+  border-radius: 14px;
+  padding: 14px 12px;
+}
+.food-ok { background: var(--green-lt); }
+.food-no { background: var(--red-lt); }
+.food-col-title {
+  font-size: 0.68rem; font-weight: 800;
+  margin-bottom: 10px;
+  display: flex; align-items: center; gap: 5px;
+}
+.food-ok .food-col-title { color: #1B7A3E; }
+.food-no .food-col-title { color: var(--red); }
+.food-row {
+  font-size: 0.74rem;
+  color: var(--label2);
+  padding: 5px 0;
+  border-bottom: 0.5px solid rgba(0,0,0,0.06);
+  display: flex; align-items: center; gap: 6px;
+  font-weight: 500;
+}
+.food-row:last-child { border-bottom: none; }
+
+/* CLEAN STEPS */
+.step-row {
+  display: flex; gap: 12px;
+  margin-bottom: 14px; align-items: flex-start;
+}
+.step-num {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--blue);
+  color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.76rem; font-weight: 800;
+  flex-shrink: 0; margin-top: 1px;
+}
+.step-text {
+  font-size: 0.8rem;
+  line-height: 1.65;
+  color: var(--label2);
+  font-weight: 500;
+}
+.step-text strong { font-weight: 700; color: var(--blue); }
+
+/* ── EMERGENCY ── */
+.emerg-banner {
+  background: linear-gradient(145deg, #3A0000, var(--red));
+  border-radius: 20px;
+  padding: 22px 20px;
+  text-align: center;
+  margin-bottom: 16px;
+  box-shadow: 0 8px 32px rgba(255,59,48,0.25);
+  position: relative; overflow: hidden;
+}
+.emerg-banner::after { content:'🚨'; position:absolute; font-size:6rem; right:-10px; bottom:-15px; opacity:0.08; }
+.emerg-title { font-family: var(--font-disp); font-size: 1.3rem; color:#fff; margin-bottom: 4px; }
+.emerg-sub   { font-size: 0.76rem; color: rgba(255,255,255,0.65); margin-bottom: 16px; line-height: 1.5; }
+.call-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: #fff;
+  color: var(--red);
+  border: none;
+  padding: 14px 32px;
+  border-radius: var(--r-pill);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+  transition: all .18s;
+}
+.call-btn:active { transform: scale(0.95); }
+
+/* ── CONTACT ── */
+.contact-hero {
+  background: linear-gradient(145deg, #1C1C1E, #2C2C2E);
+  border-radius: 20px;
+  padding: 22px 20px;
+  margin-bottom: 12px;
+  box-shadow: var(--shadow-lg);
+  position: relative; overflow: hidden;
+}
+.contact-hero::after { content:'💬'; position:absolute; font-size:5rem; right:-5px; bottom:-10px; opacity:0.07; }
+.contact-hero-title { font-family: var(--font-disp); font-size: 1.3rem; color:#fff; margin-bottom: 14px; }
+.contact-row {
+  display: flex; align-items: center; gap: 11px;
+  padding: 9px 0;
+  border-bottom: 0.5px solid rgba(255,255,255,0.08);
+}
+.contact-row:last-child { border-bottom: none; }
+.ci-ico {
+  width: 32px; height: 32px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.85rem; flex-shrink: 0;
+}
+.ci-lbl  { font-size: 0.58rem; color: var(--teal); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; display:block; margin-bottom:1px; }
+.ci-val  { font-size: 0.8rem; color: rgba(255,255,255,0.75); font-weight: 500; }
+
+/* ── BIG BUTTONS (thumb-friendly, min 54px) ── */
+.wa-btn-big {
+  width: 100%;
+  min-height: 56px;
+  background: var(--wa);
+  color: #fff;
+  border: none;
+  border-radius: var(--r-pill);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 9px;
+  box-shadow: 0 4px 20px rgba(37,211,102,0.35);
+  transition: all .18s;
+  margin-top: 14px;
+}
+.wa-btn-big:active { transform: scale(0.97); box-shadow: 0 2px 10px rgba(37,211,102,0.2); }
+.primary-btn {
+  width: 100%;
+  min-height: 56px;
+  background: var(--blue);
+  color: #fff;
+  border: none;
+  border-radius: var(--r-pill);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(0,122,255,0.3);
+  transition: all .18s;
+  margin-top: 10px;
+}
+.primary-btn:active { transform: scale(0.97); }
+
+/* ── FORM ── */
+.form-grp { margin-bottom: 12px; }
+.form-lbl { font-size: 0.68rem; font-weight: 700; color: var(--label3); text-transform: uppercase; letter-spacing: 0.7px; margin-bottom: 6px; display: block; }
+.form-ctrl {
+  width: 100%;
+  min-height: 44px;
+  padding: 11px 14px;
+  background: var(--surface);
+  border: 1.5px solid var(--sep);
+  border-radius: 12px;
+  font-family: var(--font-body);
+  font-size: 0.86rem;
+  color: var(--label);
+  outline: none;
+  transition: border-color .2s;
+  font-weight: 500;
+}
+.form-ctrl:focus { border-color: var(--blue); }
+textarea.form-ctrl { height: 80px; resize: none; }
+.form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+/* TIP BANNER */
+.tip-banner {
+  background: var(--orange-lt);
+  border-radius: 14px;
+  padding: 13px 15px;
+  border-left: 4px solid var(--orange);
+  margin-bottom: 12px;
+}
+.tip-title { font-size: 0.78rem; font-weight: 800; color: #7D4800; margin-bottom: 3px; }
+.tip-body  { font-size: 0.74rem; color: #7D4800; line-height: 1.6; opacity: 0.85; }
+
+/* WA FLOAT */
+.wa-float {
+  position: fixed;
+  bottom: calc(80px + var(--safe-bot));
+  right: 18px; z-index: 200;
+  width: 56px; height: 56px;
+  background: var(--wa);
+  color: #fff; font-size: 1.5rem;
+  border-radius: 50%;
+  border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 20px rgba(37,211,102,0.4);
+  transition: all .2s;
+}
+.wa-float:active { transform: scale(0.9); }
+</style>
+</head>
+<body>
+
+<div class="status-bar"></div>
+
+<!-- NAV BAR -->
+<div class="nav-bar">
+  <div class="nav-inner">
+    <div class="nav-logo">Ortho<span>Clinic</span></div>
+    <div class="nav-avatar">😊</div>
+  </div>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+
+  <!-- ── HOME ── -->
+  <div class="panel active" id="panel-home">
+    <div class="hero">
+      <div class="hero-eyebrow">Tu progreso · Mes 8 de 18</div>
+      <div class="hero-name">¡Vas muy bien,<br>María! 🎉</div>
+      <div class="hero-sub">Brackets metálicos · En curso</div>
+      <div class="progress-wrap">
+        <div class="progress-labels"><span>Tratamiento</span><span>65%</span></div>
+        <div class="progress-track"><div class="progress-fill"></div></div>
+      </div>
+      <div class="hero-appt">
+        <div class="appt-cal">
+          <div class="month">MAR</div>
+          <div class="day">25</div>
+        </div>
+        <div class="appt-info">
+          <div class="albl">Próxima cita</div>
+          <div class="adate">Martes 25 · 10:30 AM</div>
+          <div class="atype">Cambio de arco · Dra. González</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="module-grid">
+      <button class="module-btn" onclick="switchTab('tratamiento')">
+        <span class="m-icon">🦷</span>
+        <div class="m-title">Mi tratamiento</div>
+        <div class="m-sub">Etapas · Fotos</div>
+        <div class="m-dot"></div>
+      </button>
+      <button class="module-btn" onclick="switchTab('guia')">
+        <span class="m-icon">📚</span>
+        <div class="m-title">Guía del paciente</div>
+        <div class="m-sub">Higiene · Dieta</div>
+      </button>
+      <button class="module-btn" onclick="switchTab('emergencia')">
+        <span class="m-icon">🚨</span>
+        <div class="m-title">Tengo un problema</div>
+        <div class="m-sub">Urgencias</div>
+      </button>
+      <button class="module-btn" onclick="switchTab('contacto')">
+        <span class="m-icon">💬</span>
+        <div class="m-title">Contactar clínica</div>
+        <div class="m-sub">WhatsApp · Turno</div>
+      </button>
+    </div>
+
+    <div class="tip-banner">
+      <div class="tip-title">💡 Recordatorio de esta semana</div>
+      <div class="tip-body">Usá el hilo dental interdental después de cada comida. Con brackets es clave para evitar la descalcificación del esmalte.</div>
+    </div>
+  </div>
+
+  <!-- ── TRATAMIENTO ── -->
+  <div class="panel" id="panel-tratamiento">
+    <div class="section-title">Mi tratamiento</div>
+    <div class="section-sub">Seguimiento personalizado de tu caso</div>
+
+    <div class="ios-card">
+      <div class="ios-card-inner">
+        <div class="list-header">📊 Etapas del tratamiento</div>
+        <div class="timeline">
+          <div class="tl-row done">
+            <div class="tl-dot">✓</div>
+            <div>
+              <div class="tl-title">Estudio y diagnóstico</div>
+              <div class="tl-desc">Radiografías, fotos y modelos de estudio. Plan de tratamiento definido.</div>
+              <span class="tl-tag done">✓ Completado · Ago 2024</span>
+            </div>
+          </div>
+          <div class="tl-row done">
+            <div class="tl-dot">✓</div>
+            <div>
+              <div class="tl-title">Colocación de brackets</div>
+              <div class="tl-desc">Cementado de brackets y colocación del primer arco de nivelación.</div>
+              <span class="tl-tag done">✓ Completado · Sep 2024</span>
+            </div>
+          </div>
+          <div class="tl-row done">
+            <div class="tl-dot">✓</div>
+            <div>
+              <div class="tl-title">Nivelación y alineación</div>
+              <div class="tl-desc">Arcos progresivos para alinear todos los dientes.</div>
+              <span class="tl-tag done">✓ Completado · Feb 2025</span>
+            </div>
+          </div>
+          <div class="tl-row cur">
+            <div class="tl-dot" style="color:#fff;font-size:0.7rem;font-weight:800;">●</div>
+            <div>
+              <div class="tl-title">Cierre de espacios</div>
+              <div class="tl-desc">Corrección de espacios y ajuste de la relación entre arcadas.</div>
+              <span class="tl-tag cur">● En curso · Desde Mar 2025</span>
+            </div>
+          </div>
+          <div class="tl-row pend">
+            <div class="tl-dot" style="color:#ccc;">○</div>
+            <div>
+              <div class="tl-title">Detallado final</div>
+              <div class="tl-desc">Ajustes finos para la oclusión perfecta.</div>
+              <span class="tl-tag pend">Pendiente · ~May 2025</span>
+            </div>
+          </div>
+          <div class="tl-row pend">
+            <div class="tl-dot">🏆</div>
+            <div>
+              <div class="tl-title">Retiro y contención</div>
+              <div class="tl-desc">Retiro de brackets y colocación de retenedores. ¡La meta!</div>
+              <span class="tl-tag pend">Pendiente · ~Mar 2026</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ios-card">
+      <div class="ios-card-inner">
+        <div class="list-header">📸 Fotos de tu caso</div>
+        <div class="photo-strip">
+          <div class="photo-cell"><div class="photo-frame filled">😁</div><div class="photo-lbl">Inicio</div><div class="photo-date">Ago 2024</div></div>
+          <div class="photo-cell"><div class="photo-frame filled">🦷</div><div class="photo-lbl">Mes 2</div><div class="photo-date">Oct 2024</div></div>
+          <div class="photo-cell"><div class="photo-frame filled">✨</div><div class="photo-lbl">Mes 5</div><div class="photo-date">Ene 2025</div></div>
+          <div class="photo-cell"><div class="photo-frame filled">🌟</div><div class="photo-lbl">Mes 8</div><div class="photo-date">Mar 2025</div></div>
+          <div class="photo-cell"><div class="photo-frame">📷</div><div class="photo-lbl">Mes 12</div><div class="photo-date">Próxima</div></div>
+          <div class="photo-cell"><div class="photo-frame">🏆</div><div class="photo-lbl">Final</div><div class="photo-date">Mar 2026</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ios-card">
+      <div class="ios-card-inner">
+        <div class="list-header">📅 Próxima cita</div>
+        <div style="display:flex;align-items:center;gap:14px;padding:8px 0 12px">
+          <div style="width:52px;height:52px;background:var(--blue);border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;box-shadow:var(--shadow-md)">
+            <div style="font-size:0.52rem;font-weight:800;color:rgba(255,255,255,0.65);text-transform:uppercase;letter-spacing:1px">MAR</div>
+            <div style="font-family:var(--font-disp);font-size:1.5rem;color:#fff;line-height:1">25</div>
+          </div>
+          <div>
+            <div style="font-size:0.9rem;font-weight:700;color:var(--label)">Martes 25 de marzo · 10:30 AM</div>
+            <div style="font-size:0.74rem;color:var(--label3);margin-top:2px">Cambio de arco · Dra. González</div>
+            <div style="font-size:0.7rem;color:var(--blue);font-weight:600;margin-top:4px">📍 Av. Corrientes 1234, Piso 3</div>
+          </div>
+        </div>
+        <button onclick="switchTab('contacto')" class="primary-btn" style="margin-top:4px;background:var(--bg);color:var(--blue);box-shadow:none;border:1.5px solid var(--sep)">
+          📅 Reprogramar cita
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── GUÍA ── -->
+  <div class="panel" id="panel-guia">
+    <div class="section-title">Guía del paciente</div>
+    <div class="section-sub">Todo lo que necesitás saber</div>
+
+    <div class="segmented">
+      <button class="seg-btn active" onclick="switchGuide('limpieza',this)">🪥 Higiene</button>
+      <button class="seg-btn" onclick="switchGuide('dieta',this)">🍽️ Dieta</button>
+    </div>
+
+    <div class="guide-sec active" id="guide-limpieza">
+      <!-- VIDEO 1 · Brackets + hilo dental -->
+      <div class="video-card">
+        <div class="video-embed-wrap">
+          <iframe
+            src="https://www.youtube.com/embed/3hjELhKj8tE"
+            title="Cómo limpiar tus brackets y usar hilo dental"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen
+            loading="lazy">
+          </iframe>
+        </div>
+        <div class="video-meta">
+          <div class="vm-title">🪥 Cepillado + hilo dental con brackets</div>
+          <div class="vm-desc">Técnica completa de higiene: cómo cepillar correctamente y usar el hilo interdental con brackets para proteger tu esmalte.</div>
+          <span class="vm-tag">Esencial · Ver antes de tu rutina</span>
+        </div>
+      </div>
+
+      <!-- VIDEO 2 · Alineadores -->
+      <div class="video-card">
+        <div class="video-embed-wrap">
+          <iframe
+            src="https://www.youtube.com/embed/Hj7xexCGklU"
+            title="Cómo limpiar alineadores transparentes"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen
+            loading="lazy">
+          </iframe>
+        </div>
+        <div class="video-meta">
+          <div class="vm-title">✨ Cómo limpiar tus alineadores</div>
+          <div class="vm-desc">Técnica correcta para limpiar y conservar tus alineadores transparentes sin dañarlos ni decolorarlos.</div>
+          <span class="vm-tag" style="background:var(--teal-lt);color:#007370">Para alineadores transparentes</span>
+        </div>
+      </div>
+
+      <div class="ios-card">
+        <div class="ios-card-inner">
+          <div class="list-header">📋 Rutina diaria de higiene</div>
+          <div class="step-row"><div class="step-num">1</div><div class="step-text"><strong>Enjuague previo con agua</strong> — Aflojá los restos de comida antes de cepillar para no arrastrarlos sobre el esmalte.</div></div>
+          <div class="step-row"><div class="step-num">2</div><div class="step-text"><strong>Cepillo en ángulo 45°</strong> — Movimientos circulares suaves desde la encía hacia el bracket. Mínimo <strong>2 minutos</strong>.</div></div>
+          <div class="step-row"><div class="step-num">3</div><div class="step-text"><strong>Hilo interdental o cepillo interproximal</strong> — Pasalo bajo el arco entre bracket y bracket. Es el paso más importante y el más saltado.</div></div>
+          <div class="step-row"><div class="step-num">4</div><div class="step-text"><strong>Colutorio con flúor</strong> — Especialmente antes de dormir. Protege el esmalte de la descalcificación.</div></div>
+          <div class="step-row" style="margin-bottom:0"><div class="step-num">5</div><div class="step-text"><strong>Revisión con espejo</strong> — Chequeá que no queden restos alrededor de los brackets ni en las encías.</div></div>
+          <div style="background:var(--red-lt);border-radius:12px;padding:12px 13px;border-left:4px solid var(--red);margin-top:12px">
+            <div style="font-size:0.76rem;font-weight:800;color:var(--red);margin-bottom:3px">⚠️ Importante</div>
+            <div style="font-size:0.74rem;color:#7D1A1A;line-height:1.6">Con brackets es obligatorio cepillarse después de <strong>cada comida</strong>. Los restos acumulados bajo los brackets generan manchas permanentes e irreversibles en el esmalte.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="guide-sec" id="guide-dieta">
+      <div class="video-card">
+        <div class="video-thumb vt-dark" style="background:linear-gradient(145deg,#1A2C0A,#2D5016)" onclick="alert('📹 Video dieta con brackets')">
+          <div class="vbg">🍎</div>
+          <div style="text-align:center;position:relative;z-index:1">
+            <div class="play-circle">▶</div>
+            <div class="vt-text"><div class="vt-title">¿Qué podés comer con brackets?</div><div class="vt-dur">Guía de alimentación · ~3 min</div></div>
+          </div>
+        </div>
+        <div class="video-meta">
+          <div class="vm-title">🍽️ Alimentación con ortodoncia</div>
+          <div class="vm-desc">Qué alimentos evitar y cuáles son seguros para no dañar tus brackets ni retrasar el tratamiento.</div>
+        </div>
+      </div>
+
+      <div class="food-grid">
+        <div class="food-col food-ok">
+          <div class="food-col-title">✅ Podés comer</div>
+          <div class="food-row">🥩 Carnes blandas</div>
+          <div class="food-row">🍝 Pastas y arroz</div>
+          <div class="food-row">🥛 Lácteos</div>
+          <div class="food-row">🍌 Frutas blandas</div>
+          <div class="food-row">🥚 Huevos</div>
+          <div class="food-row">🍞 Pan blando</div>
+          <div class="food-row">🥑 Palta</div>
+          <div class="food-row">🍲 Guisos</div>
+        </div>
+        <div class="food-col food-no">
+          <div class="food-col-title">🚫 Siempre evitar</div>
+          <div class="food-row">🍎 Manzana entera</div>
+          <div class="food-row">🌽 Choclo entero</div>
+          <div class="food-row">🍬 Caramelos duros</div>
+          <div class="food-row">🍫 Chicle</div>
+          <div class="food-row">🥜 Nueces enteras</div>
+          <div class="food-row">🍕 Bordes duros</div>
+          <div class="food-row">🧊 Hielo</div>
+          <div class="food-row">🥖 Pan duro</div>
+        </div>
+      </div>
+      <div class="tip-banner">
+        <div class="tip-title">💡 Truco para frutas y vegetales duros</div>
+        <div class="tip-body">Cortá todo en trozos pequeños antes de comer. Una manzana en gajos es completamente segura. El problema es morder directo con los brackets.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── EMERGENCIA ── -->
+  <div class="panel" id="panel-emergencia">
+    <div id="emerg-list">
+      <div class="emerg-banner">
+        <div class="emerg-title">¿Tenés un problema?</div>
+        <div class="emerg-sub">Identificá qué pasó y te decimos exactamente cómo actuar</div>
+        <button class="call-btn" onclick="alert('📞 Llamando...')">📞 Llamar ahora</button>
+      </div>
+
+      <div class="list-group">
+        <div class="list-header">Seleccioná tu situación</div>
+        <button class="list-item" onclick="showDetail('dolor')">
+          <div class="li-icon" style="background:#FFF0EF">😣</div>
+          <div class="li-body"><div class="li-title">Dolor intenso o hinchazón</div><div class="li-sub">Dolor que no cede, hinchazón o fiebre</div></div>
+          <div class="li-right"><span class="li-badge badge-red">URGENTE</span><span class="li-chevron">›</span></div>
+        </button>
+        <button class="list-item" onclick="showDetail('alambre')">
+          <div class="li-icon" style="background:#FFF0EF">🔩</div>
+          <div class="li-body"><div class="li-title">Bracket despegado con alambre suelto</div><div class="li-sub">El alambre pincha la mejilla o encía</div></div>
+          <div class="li-right"><span class="li-badge badge-red">URGENTE</span><span class="li-chevron">›</span></div>
+        </button>
+        <button class="list-item" onclick="showDetail('bracket')">
+          <div class="li-icon" style="background:#FFF6E5">🪢</div>
+          <div class="li-body"><div class="li-title">Bracket despegado sin molestia</div><div class="li-sub">El bracket se soltó pero no duele</div></div>
+          <div class="li-right"><span class="li-badge badge-orange">MODERADO</span><span class="li-chevron">›</span></div>
+        </button>
+        <button class="list-item" onclick="showDetail('ligadura')">
+          <div class="li-icon" style="background:#FFF6E5">⭕</div>
+          <div class="li-body"><div class="li-title">Ligadura o gomita suelta</div><div class="li-sub">Se soltó la goma que sujeta el arco</div></div>
+          <div class="li-right"><span class="li-badge badge-orange">MODERADO</span><span class="li-chevron">›</span></div>
+        </button>
+        <button class="list-item" onclick="showDetail('molestia')">
+          <div class="li-icon" style="background:var(--green-lt)">😬</div>
+          <div class="li-body"><div class="li-title">Molestia o sensibilidad normal</div><div class="li-sub">Dolor leve post-ajuste</div></div>
+          <div class="li-right"><span class="li-badge badge-green">NORMAL</span><span class="li-chevron">›</span></div>
+        </button>
+        <button class="list-item" onclick="showDetail('roce')">
+          <div class="li-icon" style="background:var(--green-lt)">🩹</div>
+          <div class="li-body"><div class="li-title">Bracket o alambre irrita la mejilla</div><div class="li-sub">Llaga o herida por roce</div></div>
+          <div class="li-right"><span class="li-badge badge-green">LEVE</span><span class="li-chevron">›</span></div>
+        </button>
+      </div>
+
+      <div class="tip-banner">
+        <div class="tip-title">🕯️ La cera de ortodoncia es tu mejor aliada</div>
+        <div class="tip-body">Siempre tené cera a mano. Tomá un trocito, amasalo con los dedos y pegalo sobre el bracket o alambre que molesta. Alivio inmediato.</div>
+      </div>
+    </div>
+
+    <!-- DETAIL -->
+    <div id="emerg-detail" class="detail-view">
+      <button class="back-btn" onclick="hideDetail()">‹ Volver</button>
+      <div class="detail-hero">
+        <div class="detail-icon-wrap" id="d-icon">😣</div>
+        <div class="detail-title" id="d-title">Dolor intenso o hinchazón</div>
+      </div>
+      <p class="detail-desc" id="d-desc"></p>
+      <div class="info-box green">
+        <div class="info-box-head"><span style="font-size:1.1rem">✅</span><div class="info-box-title">Qué hacer en casa</div></div>
+        <div class="info-box-text" id="d-inst"></div>
+      </div>
+      <div class="info-box red">
+        <div class="info-box-head"><span style="font-size:1.1rem">🚨</span><div class="info-box-title">Cuándo llamar al doctor</div></div>
+        <div class="info-box-text" id="d-alert"></div>
+      </div>
+      <button class="wa-btn-big" id="d-wa">💬 Informar a la Clínica por WhatsApp</button>
+    </div>
+  </div>
+
+  <!-- ── CONTACTO ── -->
+  <div class="panel" id="panel-contacto">
+    <div class="contact-hero">
+      <div class="contact-hero-title">Contacto con<br>tu clínica 💬</div>
+      <div class="contact-row"><div class="ci-ico">📱</div><div><span class="ci-lbl">WhatsApp</span><span class="ci-val">+54 11 0000-0000</span></div></div>
+      <div class="contact-row"><div class="ci-ico">📧</div><div><span class="ci-lbl">Email</span><span class="ci-val"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e68f888089a68994928e89858a8f888f85c885898bc88794">[email&#160;protected]</a></span></div></div>
+      <div class="contact-row"><div class="ci-ico">📍</div><div><span class="ci-lbl">Dirección</span><span class="ci-val">Av. Corrientes 1234, Piso 3, CABA</span></div></div>
+      <div class="contact-row"><div class="ci-ico">🕐</div><div><span class="ci-lbl">Horario</span><span class="ci-val">Lun–Vie 9–18h · Sáb 9–13h</span></div></div>
+      <button class="wa-btn-big" onclick="alert('Abriendo WhatsApp...')">💬 Escribir por WhatsApp</button>
+    </div>
+
+    <div class="ios-card">
+      <div class="ios-card-inner">
+        <div class="list-header">📅 Solicitar turno</div>
+        <div class="form-grp"><label class="form-lbl">Tu nombre</label><input class="form-ctrl" value="María García"></div>
+        <div class="form-grp">
+          <label class="form-lbl">Motivo</label>
+          <select class="form-ctrl">
+            <option>Control de rutina</option>
+            <option>Bracket despegado</option>
+            <option>Dolor o molestia</option>
+            <option>Consulta general</option>
+          </select>
+        </div>
+        <div class="form-row-2">
+          <div class="form-grp"><label class="form-lbl">Fecha</label><input type="date" class="form-ctrl"></div>
+          <div class="form-grp"><label class="form-lbl">Hora</label>
+            <select class="form-ctrl">
+              <option>9:00 AM</option><option>10:00 AM</option><option>11:00 AM</option>
+              <option>2:00 PM</option><option>3:00 PM</option><option>4:00 PM</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-grp"><label class="form-lbl">Mensaje</label><textarea class="form-ctrl" placeholder="Contanos qué necesitás..."></textarea></div>
+        <button class="primary-btn" onclick="alert('✅ ¡Solicitud enviada! Te confirmamos por WhatsApp.')">📅 Solicitar turno</button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end content -->
+
+<!-- TAB BAR -->
+<div class="tab-bar">
+  <div class="tab-items">
+    <button class="tab-item active" onclick="switchTab('home')" id="tab-home">
+      <div class="tab-icon">🏠</div>
+      <div class="tab-label">Inicio</div>
+    </button>
+    <button class="tab-item" onclick="switchTab('tratamiento')" id="tab-tratamiento">
+      <div class="tab-icon">🦷</div>
+      <div class="tab-label">Tratamiento</div>
+    </button>
+    <button class="tab-item" onclick="switchTab('guia')" id="tab-guia">
+      <div class="tab-icon">📚</div>
+      <div class="tab-label">Guía</div>
+    </button>
+    <button class="tab-item" onclick="switchTab('emergencia')" id="tab-emergencia">
+      <div class="tab-icon">🚨</div>
+      <div class="tab-label">Problema</div>
+    </button>
+    <button class="tab-item" onclick="switchTab('contacto')" id="tab-contacto">
+      <div class="tab-icon">💬</div>
+      <div class="tab-label">Contacto</div>
+    </button>
+  </div>
+</div>
+
+<button class="wa-float" onclick="alert('WhatsApp...')">💬</button>
+
+<script>
+const urgenciaData = {
+  dolor:    { icon:'😣', title:'Dolor intenso o hinchazón',
+    desc:'Dolor que no cede con analgésicos, hinchazón de encías o cara, o fiebre. Puede indicar infección u otra complicación seria.',
+    inst:'Tomá paracetamol (acetaminofén) según las indicaciones del envase — evitá el ibuprofeno y otros AINEs ya que pueden interferir con el movimiento óseo del tratamiento. Aplicá frío en la mejilla exterior durante 15 minutos. Enjuagá con agua tibia con sal. Comé alimentos blandos.',
+    alert:'Llamá a la clínica hoy mismo si el dolor es intenso y no responde a analgésicos, si hay hinchazón facial, fiebre, o si notás pus en la zona. Acudí a urgencias si no podés contactar a la clínica.' },
+  alambre:  { icon:'🔩', title:'Bracket despegado con alambre suelto',
+    desc:'El bracket se despegó y el alambre quedó libre, pudiendo pinchar la mejilla, encía o lengua.',
+    inst:'Aplicá cera de ortodoncia sobre el extremo del alambre que pincha para proteger la mucosa. Si podés, intentá doblar suavemente el alambre hacia el diente con una goma de borrar. Enjuagá con agua tibia con sal si hay irritación.',
+    alert:'Contactá a la clínica hoy mismo. Es urgente si el alambre está clavándose en la mejilla o encía, si hay sangrado que no para, o si hay signos de infección.' },
+  bracket:  { icon:'🪢', title:'Bracket despegado sin molestia',
+    desc:'El bracket se despegó del diente pero el alambre sigue en su sitio y no causa dolor ni molestia.',
+    inst:'Si el bracket está unido al arco, dejalo en su lugar. Si se cayó, guardalo en una bolsa limpia. Aplicá cera si roza. Evitá alimentos duros o pegajosos.',
+    alert:'Avisá en tu próximo turno o contactá a la clínica si podés adelantar la cita. No dejes pasar más de 2 semanas con un bracket despegado.' },
+  ligadura: { icon:'⭕', title:'Ligadura o gomita suelta',
+    desc:'La ligadura que sujeta el arco al bracket se soltó o cayó. Sin ella, el arco puede moverse y el tratamiento pierde efectividad.',
+    inst:'Si es una goma, intentá recolocarla con unas pinzas limpias empujándola alrededor del bracket. Si es una ligadura metálica, intentá doblarla hacia el bracket con un palillo. Aplicá cera si el extremo pincha.',
+    alert:'Consultá en tu próxima cita. Contactá antes si el arco se salió del bracket o si la ligadura metálica pincha y causa heridas.' },
+  molestia: { icon:'😬', title:'Molestia o sensibilidad normal',
+    desc:'Dolor leve o sensibilidad en los primeros días después de cada ajuste. Es completamente normal y significa que los dientes se están moviendo.',
+    inst:'Tomá paracetamol (acetaminofén) si es necesario — nunca ibuprofeno ni AINEs durante el tratamiento ortodóntico ya que retrasan la formación de hueso. Comé alimentos blandos 2-3 días. Aplicá frío en la mejilla. Enjuagá con agua tibia con sal.',
+    alert:'Contactá al doctor si el dolor dura más de 7 días, si es muy intenso y no responde a analgésicos, o si notás que un diente se mueve excesivamente.' },
+  roce:     { icon:'🩹', title:'Bracket o alambre irrita la mejilla',
+    desc:'Un bracket o el extremo del alambre roza y genera una pequeña herida o úlcera en la mejilla, labio o lengua.',
+    inst:'Aplicá cera de ortodoncia sobre el bracket o zona que causa el roce. Usá gel oral para llagas si tenés. Enjuagá con agua tibia con sal 3 veces al día. Evitá alimentos ácidos o muy calientes.',
+    alert:'Consultá al doctor si la llaga no mejora en 10 días, si es muy grande (más de 1 cm), si tenés fiebre, o si aparecen múltiples llagas simultáneamente.' }
+};
+
+function switchTab(t) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-item').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-'+t).classList.add('active');
+  document.getElementById('tab-'+t).classList.add('active');
+  window.scrollTo({top:0, behavior:'smooth'});
+  if(t === 'emergencia') hideDetail();
+}
+
+function switchGuide(id, el) {
+  document.querySelectorAll('.guide-sec').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.seg-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('guide-'+id).classList.add('active');
+  el.classList.add('active');
+}
+
+function showDetail(id) {
+  const u = urgenciaData[id];
+  document.getElementById('d-icon').textContent  = u.icon;
+  document.getElementById('d-title').textContent = u.title;
+  document.getElementById('d-desc').textContent  = u.desc;
+  document.getElementById('d-inst').textContent  = u.inst;
+  document.getElementById('d-alert').textContent = u.alert;
+  document.getElementById('d-wa').onclick = () => {
+    const msg = encodeURIComponent('Hola, tengo una urgencia de ortodoncia: ' + u.title);
+    window.open('https://wa.me/5491100000000?text='+msg, '_blank');
+  };
+  document.getElementById('emerg-list').style.display   = 'none';
+  document.getElementById('emerg-detail').classList.add('active');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function hideDetail() {
+  document.getElementById('emerg-list').style.display   = 'block';
+  document.getElementById('emerg-detail').classList.remove('active');
+}
+</script>
+</body>
+</html>
